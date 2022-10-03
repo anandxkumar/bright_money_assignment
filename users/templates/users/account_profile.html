@@ -22,13 +22,16 @@
 		$('#get_account_data').submit();
 	}
 
+	function getTotalTransactionData(){
+		$('#get_Total_Transaction_Data').submit();
+	}
 
 </script>
 
 <input hidden id='transactionData' value='{{transactionData}}'>
 <input hidden id='accountData' value='{{accountData}}'>
-
-<h1>Welcome, {{ user.username }}</h1><br>
+<input hidden id='totalTransactionData' value='{{totalTransactionData}}'>
+<h1>Hi {{ user.username }}, You can perform the following task: </h1><br>
 
 <style>
 	.none{
@@ -48,14 +51,12 @@
 		<button class="btn btn-success" onclick="getAccountData()">Get Account Data</button>
 	</div>
 	<div class="row">
+		<button class="btn btn-success" onclick="getTotalTransactionData()">Get Total number of Transactions</button>
+	</div>
+	<div class="row">
 		 <form class="form-horizontal" role="form" action="{% url 'users:invalidate' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input name="user_id" type="text" value="{{ user.id }}" hidden>
-        <div class="form-group">
-	        <div class="col-sm-offset-2 col-sm-10">
-	            <button type="submit" class="btn btn-success">Logout</button>
-	        </div>
-	    </div>
     </form>
 	</div>
 </div>
@@ -65,18 +66,20 @@
         {% csrf_token %}
         <input name="user_id" type="text" value="{{ user.id }}" hidden>
         <div class="form-group">
-	        <div class="col-sm-offset-2 col-sm-10">
-	            <button type="submit" class="btn btn-success">Logout</button>
-	        </div>
 	    </div>
     </form>
     <form id="get_account_data" class="form-horizontal" role="form" action="{% url 'users:getAccounts' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input name="user_id" type="text" value="{{ user.id }}" hidden>
         <div class="form-group">
-	        <div class="col-sm-offset-2 col-sm-10">
-	            <button type="submit" class="btn btn-success">Logout</button>
-	        </div>
+
+	    </div>
+    </form>
+	<form id="get_Total_Transaction_Data" class="form-horizontal" role="form" action="{% url 'users:getTotalTransactions' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input name="user_id" type="text" value="{{ user.id }}" hidden>
+        <div class="form-group">
+
 	    </div>
     </form>
 </div>
@@ -88,6 +91,9 @@
 		</div>
 		<div class="col-md-6" id="displayAccounts">
 			{{accountData}}
+		</div>	
+		<div class="col-md-6" id="displayAccounts">
+			{{totalTransactionData}}
 		</div>	
 	</div>
 </div>

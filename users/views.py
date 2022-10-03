@@ -35,37 +35,51 @@ def account_profile(request, user_id):
 def logout(request):
 	return HttpResponse("<h1>You are logged out</h1>")
 
-def getTransactionData(access_tkn):
-	url = "https://sandbox.plaid.com/transactions/get"
 
-	payload = {
-		"client_id":"5da9e9d3470e370016651aa3",
-		"secret":"1026c23bcd23fccd4f9dabb1f9f172",
-		"access_token": access_tkn,
-		"start_date":"2017-10-25",
-		"end_date":"2019-10-25"
-	}
+## Get all transaction details
+def getAllData(access_tkn):
+	# url = "https://sandbox.plaid.com/transactions/get"
 
-	data = json.dumps(payload)
+	# payload = {
+	# 	"client_id":"5da9e9d3470e370016651aa3",
+	# 	"secret":"1026c23bcd23fccd4f9dabb1f9f172",
+	# 	"access_token": access_tkn,
+	# 	"start_date":"2017-10-25",
+	# 	"end_date":"2019-10-25"
+	# }
 
-	headers = {
-    'Content-Type': "application/json",
-    'cache-control': "no-cache",
-    'Postman-Token': "bec1a651-a9e8-4771-9b6e-bf668f000232"
-    }
+	# data = json.dumps(payload)
 
-	rawResponse = requests.request("POST", url, data=data, headers=headers)
-	response = json.loads(rawResponse.text)
-	prettyResponse = json.dumps(response, indent=4, sort_keys=True)
+	# headers = {
+    # 'Content-Type': "application/json",
+    # 'cache-control': "no-cache",
+    # 'Postman-Token': "bec1a651-a9e8-4771-9b6e-bf668f000232"
+    # }
 
-	return prettyResponse
+	# rawResponse = requests.request("POST", url, data=data, headers=headers)
+	# response = json.loads(rawResponse.text)
+	# prettyResponse = json.dumps(response, indent=4, sort_keys=True)
+	INSTITUTION_ID = 'ins_3'
+	client = Client(client_id='5da9e9d3470e370016651aa3', secret='1026c23bcd23fccd4f9dabb1f9f172', environment='sandbox')
+	# res = client.Sandbox.public_token.create(
+	# 		INSTITUTION_ID,
+	# 		['transactions'],
+	# 		webhook='https://webhook.site/82e5cebe-b8d0-4178-ac51-bb3699d782ac'
+	# 	)
 
-def getAccountData(access_tkn):
-	rawTransactionData = getTransactionData(access_tkn)
-	transactionData = json.loads(rawTransactionData)
-	accountData = transactionData['accounts']
-	print(accountData)
-	return accountData
+
+
+	response = client.Transactions.get(access_tkn,
+									start_date='2021-09-25',
+									end_date='2021-10-25')
+
+	return response
+
+# def getAccountData(access_tkn):
+# 	response = getAllData(access_tkn)
+# 	accountData = response['accounts']
+# 	print(accountData)
+# 	return accountData
 
 def validate(request):
 	template = loader.get_template('users/login.html')
@@ -214,6 +228,7 @@ def register(request):
 	# Returning request
 	return HttpResponse(template.render(context, request))
 
+# To get Transactions details 
 def getTransactions(request):
 	template = loader.get_template('users/account_profile.html')
 	user_id = request.POST['user_id']
@@ -222,11 +237,13 @@ def getTransactions(request):
 	if access_tkn:
 		try:
 			user = Users.objects.get(pk=user_id)
-			transactionData = getTransactionData(access_tkn)
+			# Get Transactions details from all detail
+			response = getAllData(access_tkn)
+			transactionData = response['transactions']
 			context = {	
 				'user':user,
 				'transactionData':transactionData,
-				'response_message':'Successfully Reloaded Transaction Data'
+				'response_message':'Successfully Loaded Transaction Data'
 			} 
 		except:
 			template = loader.get_template('users/login.html')
@@ -237,6 +254,33 @@ def getTransactions(request):
 	
 	return HttpResponse(template.render(context, request))
 
+# To get Total number of Transactions 
+def getTotalTransactions(request):
+	template = loader.get_template('users/account_profile.html')
+	user_id = request.POST['user_id']
+	access_tkn = request.session['access_tkn']
+	context = dict()
+	if access_tkn:
+		try:
+			user = Users.objects.get(pk=user_id)
+			# Get Transactions details from all detail
+			response = getAllData(access_tkn)
+			totalTransactionData = response['total_transactions']
+			context = {	
+				'user':user,
+				'totalTransactionData':totalTransactionData,
+				'response_message':'Successfully Loaded Total Number of Transaction Data'
+			} 
+		except:
+			template = loader.get_template('users/login.html')
+		
+	
+	else:
+		template = loader.get_template('users/login.html')
+	
+	return HttpResponse(template.render(context, request))
+
+# get Account details
 def getAccounts(request):
 	template = loader.get_template('users/account_profile.html')
 	user_id = request.POST['user_id']
@@ -244,11 +288,12 @@ def getAccounts(request):
 	context = dict()
 	try:
 		user = Users.objects.get(pk=user_id)
-		accountData = getAccountData(access_tkn)
+		response = getAllData(access_tkn)
+		accountData = response['accounts']
 		context = {	
 			'user':user,
 			'accountData':accountData,
-			'response_message':'Successfully Reloaded Account Data'
+			'response_message':'Successfully Loaded Account Data'
 		} 
 	except:
 		print("Redirecting")

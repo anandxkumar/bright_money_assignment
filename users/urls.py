@@ -14,4 +14,5 @@ urlpatterns = [
  	url(r'^register/$', views.register, name='register'),
  	url(r'^getTransactions/$', views.getTransactions, name='getTransactions'),
  	url(r'^getAccounts/$', views.getAccounts, name='getAccounts'),
+    url(r'^getTotalTransactions/$', views.getTotalTransactions, name='getTotalTransactions')
 ]
