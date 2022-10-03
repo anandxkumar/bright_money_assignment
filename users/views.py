@@ -6,6 +6,8 @@ from django.views import generic
 from django.http import Http404
 import requests
 import json
+from plaid import Client
+
 
 # renders on homepage
 def index(request):
@@ -125,49 +127,68 @@ def signup(request):
 
 # Uses sandbox environemt
 def getPublicToken():
-	url = "https://sandbox.plaid.com/sandbox/public_token/create"
-	payload = {
-		"public_key":"91e20631f435dd6896adf30031b81c",
-		"institution_id":"ins_3",
-		"initial_products":["transactions"],
-		"options":{
-			"webhook":"https://webhook.site/82e5cebe-b8d0-4178-ac51-bb3699d782ac"
-		}
-	}
-	data = json.dumps(payload)
-	headers = {
-	    'Content-Type': "application/json",
-	    'cache-control': "no-cache",
-	    'Postman-Token': "02fad5e9-5a06-4d80-b35e-db22559238e9"
-	    }
-	rawResponse = requests.request("POST", url, data=data, headers=headers)
-	response = json.loads(rawResponse.text)
-	public_token = response['public_token']
-	return public_token
 
-def exchangeToken(public_token):
-	url = "https://sandbox.plaid.com/item/public_token/exchange"
+	# Using legacy library for generating Public Enviroment
+	INSTITUTION_ID = 'ins_1' # The ID of the institution the Item will be associated with
+	# Creating client
+	client = Client(client_id='6339fd163977df00141a0ca6', secret='71084c7717eee5a68c8601f9c2b268', environment='sandbox')
+	# Creating public token
+	res = client.Sandbox.public_token.create(
+			INSTITUTION_ID,
+			['transactions'],
+			webhook='https://sample-webhook-uri.com' # Expose a webhook for handling plaid transaction updates and fetch the transactions on receival of a webhook
+		)
 
-	payload = {
-		"client_id":"5da9e9d3470e370016651aa3",
-		"secret":"1026c23bcd23fccd4f9dabb1f9f172",
-		"public_token":public_token
-	}
+	# url = "https://sandbox.plaid.com/sandbox/public_token/create"
+	# payload = {
+	# 	"public_key":"91e20631f435dd6896adf30031b81c",
+	# 	"institution_id":"ins_3",
+	# 	"initial_products":["transactions"],
+	# 	"options":{
+	# 		"webhook":"https://webhook.site/82e5cebe-b8d0-4178-ac51-bb3699d782ac"
+	# 	}
+	# }
+	# data = json.dumps(payload)
+	# headers = {
+	#     'Content-Type': "application/json",
+	#     'cache-control': "no-cache",
+	#     'Postman-Token': "02fad5e9-5a06-4d80-b35e-db22559238e9"
+	#     }
+	# rawResponse = requests.request("POST", url, data=data, headers=headers)
+	# response = json.loads(rawResponse.text)
+	# public_token = response['public_token']
+	public_token = res['public_token']
+	print("PUBLIC TOKENNNN MIL GYA")
+	return public_token, client
 
-	data = json.dumps(payload)
+def exchangeToken(public_token, client):
 
-	headers = {
-	    'Content-Type': "application/json",
-	    'cache-control': "no-cache",
-	    'Postman-Token': "278806c6-0301-49d7-933d-f3c7b295e6a4"
-	}
+	# Using legacy method
+	# url = "https://sandbox.plaid.com/item/public_token/exchange"
 
-	rawResponse = requests.request("POST", url, data=data, headers=headers)
-	response = json.loads(rawResponse.text)
+	# payload = {
+	# 	"client_id":"5da9e9d3470e370016651aa3",
+	# 	"secret":"1026c23bcd23fccd4f9dabb1f9f172",
+	# 	"public_token":public_token
+	# }
+
+	# data = json.dumps(payload)
+
+	# headers = {
+	#     'Content-Type': "application/json",
+	#     'cache-control': "no-cache",
+	#     'Postman-Token': "278806c6-0301-49d7-933d-f3c7b295e6a4"
+	# }
+
+	# rawResponse = requests.request("POST", url, data=data, headers=headers)
+	# response = json.loads(rawResponse.text)
+	# access_tkn = response['access_token']
+	# item_id = response['item_id']
+	response = client.Item.public_token.exchange(public_token)
 	access_tkn = response['access_token']
 	item_id = response['item_id']
-
-	return access_tkn,item_id
+	print("accees_tkn: ", access_tkn, "item_id: ", item_id)
+	return access_tkn, item_id
 
 
 # For adding user in database
@@ -178,9 +199,9 @@ def register(request):
 	password = request.POST['password']
 	email = request.POST['email_id']
 
-	public_token = getPublicToken()
+	public_token, client = getPublicToken()
 	print("Successfully Generated Public Token for user ",username," ",public_token)
-	access_tkn,item_id = exchangeToken(public_token)
+	access_tkn,item_id = exchangeToken(public_token, client)
 
 	# Creating a user
 	user = Users.objects.create(username=username,password=password,email=email,access_tkn=access_tkn,item_id=item_id)
