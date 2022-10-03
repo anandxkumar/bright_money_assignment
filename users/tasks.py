@@ -3,7 +3,7 @@ from plaid import Client
 from django.http import HttpResponse
 from .models import Users
 from django.template import loader
-from website.settings import PLAID_CLIENT_ID, PLAID_SECRET_KEY, PLAID_ENV
+from mainApp.settings import PLAID_CLIENT_ID, PLAID_SECRET_KEY, PLAID_ENV
 
 @shared_task(bind=True)  
 def test_func(self):  

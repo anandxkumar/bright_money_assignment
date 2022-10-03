@@ -4,7 +4,7 @@ from django.template import loader
 from django.http import Http404
 from plaid import Client
 from .tasks import test_func, getAccountsCelery  
-from website.settings import PLAID_CLIENT_ID, PLAID_SECRET_KEY, PLAID_ENV
+from mainApp.settings import PLAID_CLIENT_ID, PLAID_SECRET_KEY, PLAID_ENV
 
 
 # renders on homepage
