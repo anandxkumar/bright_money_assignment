@@ -5,6 +5,7 @@ In order to run the project run the following commands:
 - python manage.py migrate
 - python manage.py runserver
 - The website will we available at http://localhost:8000/users/
+- To track celery tasks run: celery -A mainApp  worker -l info
 
 
 Following are the different steps involved in the project:
