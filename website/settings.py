@@ -115,6 +115,13 @@ USE_L10N = True
 
 USE_TZ = True
 
+# ENVIRONEMENT Variable
+import os 
+
+PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')
+PLAID_SECRET_KEY = os.getenv('PLAID_SECRET_KEY')
+PLAID_ENV = os.getenv('PLAID_ENV')
+
 # CELERY
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'

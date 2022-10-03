@@ -7,6 +7,7 @@ from django.http import Http404
 import requests
 import json
 from plaid import Client
+from website.settings import PLAID_CLIENT_ID, PLAID_SECRET_KEY, PLAID_ENV
 
 
 # renders on homepage
@@ -33,7 +34,12 @@ def account_profile(request, user_id):
 	return HttpResponse("<h2>User profile for user: " + str(user_id) + " </h2>" )
 
 def logout(request):
-	return HttpResponse("<h1>You are logged out</h1>")
+	template = loader.get_template('users/login.html')
+	login_message = 'Logged out successfully. Enter your credentials to login into the system'
+	context  = {
+		'login_message': login_message,
+	}
+	return HttpResponse(template.render(context, request))
 
 
 ## Get all transaction details
@@ -60,7 +66,7 @@ def getAllData(access_tkn):
 	# response = json.loads(rawResponse.text)
 	# prettyResponse = json.dumps(response, indent=4, sort_keys=True)
 	INSTITUTION_ID = 'ins_3'
-	client = Client(client_id='5da9e9d3470e370016651aa3', secret='1026c23bcd23fccd4f9dabb1f9f172', environment='sandbox')
+	client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET_KEY, environment=PLAID_ENV)
 	# res = client.Sandbox.public_token.create(
 	# 		INSTITUTION_ID,
 	# 		['transactions'],
@@ -145,7 +151,7 @@ def getPublicToken():
 	# Using legacy library for generating Public Enviroment
 	INSTITUTION_ID = 'ins_1' # The ID of the institution the Item will be associated with
 	# Creating client
-	client = Client(client_id='6339fd163977df00141a0ca6', secret='71084c7717eee5a68c8601f9c2b268', environment='sandbox')
+	client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET_KEY, environment=PLAID_ENV)
 	# Creating public token
 	res = client.Sandbox.public_token.create(
 			INSTITUTION_ID,
@@ -286,9 +292,11 @@ def getAccounts(request):
 	user_id = request.POST['user_id']
 	access_tkn = request.session['access_tkn']
 	context = dict()
+	client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET_KEY, environment=PLAID_ENV)
+	
 	try:
 		user = Users.objects.get(pk=user_id)
-		response = getAllData(access_tkn)
+		response = client.Accounts.balance.get(access_tkn)
 		accountData = response['accounts']
 		context = {	
 			'user':user,

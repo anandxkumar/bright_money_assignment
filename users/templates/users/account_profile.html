@@ -45,14 +45,11 @@
 <div class="container-fluid">
 	<div class="row">
 		<button class="btn btn-success" onclick="getTransactionData()">Get Transaction Data</button>
-	</div>
-	<br>
-	<div class="row">
+		<button class="btn btn-success" onclick="getTotalTransactionData()">Get Total number of Transactions</button>
 		<button class="btn btn-success" onclick="getAccountData()">Get Account Data</button>
 	</div>
-	<div class="row">
-		<button class="btn btn-success" onclick="getTotalTransactionData()">Get Total number of Transactions</button>
-	</div>
+	<br>
+
 	<div class="row">
 		 <form class="form-horizontal" role="form" action="{% url 'users:invalidate' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -84,18 +81,18 @@
     </form>
 </div>
 
+
 <div class="container">
-	<div class="row">
-		<div class="col-md-6" id="displayTransactions">
-			{{transactionData}}
-		</div>
-		<div class="col-md-6" id="displayAccounts">
-			{{accountData}}
-		</div>	
-		<div class="col-md-6" id="displayAccounts">
-			{{totalTransactionData}}
-		</div>	
+	<pre>
+	<code>
+
+	{{totalTransactionData}}
+	{{transactionData}}
+	{{accountData}}
+
 	</div>
+	</code>
+	</pre>
 </div>
 
 
