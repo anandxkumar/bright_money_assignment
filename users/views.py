@@ -1,12 +1,9 @@
 from django.http import HttpResponse
 from .models import Users
 from django.template import loader
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views import generic
 from django.http import Http404
-import requests
-import json
 from plaid import Client
+from .tasks import test_func, getAccountsCelery  
 from website.settings import PLAID_CLIENT_ID, PLAID_SECRET_KEY, PLAID_ENV
 
 
@@ -308,3 +305,16 @@ def getAccounts(request):
 		template = loader.get_template('users/login.html')
 	
 	return HttpResponse(template.render(context, request))
+
+
+# Create your views here.  
+  
+def testCelery(request):  
+    # call the test_function using delay, calling task  
+    test_func.delay()  
+    access_tkn = request.session['access_tkn']
+    #client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET_KEY, environment=PLAID_ENV)
+    accountData = getAccountsCelery.delay(access_tkn)
+
+	
+    return HttpResponse("Success")

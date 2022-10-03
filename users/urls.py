@@ -2,6 +2,7 @@ from django.conf.urls import url
 from . import views
 
 app_name = 'users'
+from django.urls import path  
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -14,5 +15,6 @@ urlpatterns = [
  	url(r'^register/$', views.register, name='register'),
  	url(r'^getTransactions/$', views.getTransactions, name='getTransactions'),
  	url(r'^getAccounts/$', views.getAccounts, name='getAccounts'),
-    url(r'^getTotalTransactions/$', views.getTotalTransactions, name='getTotalTransactions')
+    url(r'^getTotalTransactions/$', views.getTotalTransactions, name='getTotalTransactions'),
+    url(r'^getAccountsCelery/$', views.testCelery, name='getAccountsCelery'),  
 ]
