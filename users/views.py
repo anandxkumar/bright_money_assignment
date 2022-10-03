@@ -26,7 +26,7 @@ def login(request):
 	}
 	return HttpResponse(template.render(context, request))
 
-def account_profile(request, user_id):
+def success_loggin(request, user_id):
 
 	return HttpResponse("<h2>User profile for user: " + str(user_id) + " </h2>" )
 
@@ -106,7 +106,7 @@ def validate(request):
 			'login_message': login_message
 		}
 
-		template = loader.get_template('users/account_profile.html')
+		template = loader.get_template('users/success_loggin.html')
 	except:
 		login_message = "Incorrect Credentials. Please Try Again...."		
 		context = {
@@ -233,7 +233,7 @@ def register(request):
 
 # To get Transactions details 
 def getTransactions(request):
-	template = loader.get_template('users/account_profile.html')
+	template = loader.get_template('users/success_loggin.html')
 	user_id = request.POST['user_id']
 	access_tkn = request.session['access_tkn']
 	context = dict()
@@ -259,7 +259,7 @@ def getTransactions(request):
 
 # To get Total number of Transactions 
 def getTotalTransactions(request):
-	template = loader.get_template('users/account_profile.html')
+	template = loader.get_template('users/success_loggin.html')
 	user_id = request.POST['user_id']
 	access_tkn = request.session['access_tkn']
 	context = dict()
@@ -285,7 +285,7 @@ def getTotalTransactions(request):
 
 # get Account details
 def getAccounts(request):
-	template = loader.get_template('users/account_profile.html')
+	template = loader.get_template('users/success_loggin.html')
 	user_id = request.POST['user_id']
 	access_tkn = request.session['access_tkn']
 	context = dict()
