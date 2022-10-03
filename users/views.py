@@ -41,48 +41,14 @@ def logout(request):
 
 ## Get all transaction details
 def getAllData(access_tkn):
-	# url = "https://sandbox.plaid.com/transactions/get"
 
-	# payload = {
-	# 	"client_id":"5da9e9d3470e370016651aa3",
-	# 	"secret":"1026c23bcd23fccd4f9dabb1f9f172",
-	# 	"access_token": access_tkn,
-	# 	"start_date":"2017-10-25",
-	# 	"end_date":"2019-10-25"
-	# }
-
-	# data = json.dumps(payload)
-
-	# headers = {
-    # 'Content-Type': "application/json",
-    # 'cache-control': "no-cache",
-    # 'Postman-Token': "bec1a651-a9e8-4771-9b6e-bf668f000232"
-    # }
-
-	# rawResponse = requests.request("POST", url, data=data, headers=headers)
-	# response = json.loads(rawResponse.text)
-	# prettyResponse = json.dumps(response, indent=4, sort_keys=True)
-	INSTITUTION_ID = 'ins_3'
 	client = Client(client_id=PLAID_CLIENT_ID, secret=PLAID_SECRET_KEY, environment=PLAID_ENV)
-	# res = client.Sandbox.public_token.create(
-	# 		INSTITUTION_ID,
-	# 		['transactions'],
-	# 		webhook='https://webhook.site/82e5cebe-b8d0-4178-ac51-bb3699d782ac'
-	# 	)
-
-
-
 	response = client.Transactions.get(access_tkn,
 									start_date='2021-09-25',
 									end_date='2021-10-25')
 
 	return response
 
-# def getAccountData(access_tkn):
-# 	response = getAllData(access_tkn)
-# 	accountData = response['accounts']
-# 	print(accountData)
-# 	return accountData
 
 def validate(request):
 	template = loader.get_template('users/login.html')
@@ -118,7 +84,6 @@ def validate(request):
 	username=None
 	password=None
 	access_tkn=None
-	transactionData=None
 	return HttpResponse(template.render(context, request))
 
 
@@ -156,55 +121,19 @@ def getPublicToken():
 			webhook='https://sample-webhook-uri.com' # Expose a webhook for handling plaid transaction updates and fetch the transactions on receival of a webhook
 		)
 
-	# url = "https://sandbox.plaid.com/sandbox/public_token/create"
-	# payload = {
-	# 	"public_key":"91e20631f435dd6896adf30031b81c",
-	# 	"institution_id":"ins_3",
-	# 	"initial_products":["transactions"],
-	# 	"options":{
-	# 		"webhook":"https://webhook.site/82e5cebe-b8d0-4178-ac51-bb3699d782ac"
-	# 	}
-	# }
-	# data = json.dumps(payload)
-	# headers = {
-	#     'Content-Type': "application/json",
-	#     'cache-control': "no-cache",
-	#     'Postman-Token': "02fad5e9-5a06-4d80-b35e-db22559238e9"
-	#     }
-	# rawResponse = requests.request("POST", url, data=data, headers=headers)
-	# response = json.loads(rawResponse.text)
-	# public_token = response['public_token']
+
 	public_token = res['public_token']
-	print("PUBLIC TOKENNNN MIL GYA")
+
 	return public_token, client
 
 def exchangeToken(public_token, client):
 
 	# Using legacy method
-	# url = "https://sandbox.plaid.com/item/public_token/exchange"
-
-	# payload = {
-	# 	"client_id":"5da9e9d3470e370016651aa3",
-	# 	"secret":"1026c23bcd23fccd4f9dabb1f9f172",
-	# 	"public_token":public_token
-	# }
-
-	# data = json.dumps(payload)
-
-	# headers = {
-	#     'Content-Type': "application/json",
-	#     'cache-control': "no-cache",
-	#     'Postman-Token': "278806c6-0301-49d7-933d-f3c7b295e6a4"
-	# }
-
-	# rawResponse = requests.request("POST", url, data=data, headers=headers)
-	# response = json.loads(rawResponse.text)
-	# access_tkn = response['access_token']
-	# item_id = response['item_id']
+	
 	response = client.Item.public_token.exchange(public_token)
 	access_tkn = response['access_token']
 	item_id = response['item_id']
-	print("accees_tkn: ", access_tkn, "item_id: ", item_id)
+	# print("access_tkn: ", access_tkn, "item_id: ", item_id)
 	return access_tkn, item_id
 
 
@@ -307,8 +236,7 @@ def getAccounts(request):
 	return HttpResponse(template.render(context, request))
 
 
-# Create your views here.  
-  
+# Using celery for getting accountData  
 def testCelery(request):  
     # call the test_function using delay, calling task  
     test_func.delay()  

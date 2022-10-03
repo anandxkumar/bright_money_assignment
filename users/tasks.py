@@ -18,8 +18,3 @@ def getAccountsCelery(self, access_tkn):
     accountData = response['accounts']
     print("Account DATA", accountData)
     return 'Successfully return Account Data'
-
-# @shared_task
-# def adding_task(x, y):
-#     print(x+y)
-#     return x + y
