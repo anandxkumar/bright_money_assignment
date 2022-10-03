@@ -1,0 +1,23 @@
+{% extends 'users/base.html' %}
+{% block title %} User Signup {% endblock %}
+
+{% block body %}
+<div class="row">
+    {% block start %}
+    {% if user.is_logged_in %}
+    <center><h1>welcome back {{user.username}}!</h1></center>
+    {% else %}
+    <center><h1>Login Please</h1></center>
+    {% endif %}
+    {% endblock %}
+  </div>
+
+{% comment %} <div style="width:800px; margin:0 auto;"> 
+
+    <!-- <p> {{ all_users }} </p> -->
+
+    <a href="{% url 'users:login' %}">Login</a><br>
+    <a href="{% url 'users:signup' %}">Signup</a>
+
+</div> {% endcomment %}
+{% endblock %}
